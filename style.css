@@ -1,90 +1,208 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-body{
-    background-color: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+body {
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
-.container{
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
+.container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
 }
-.calculator{
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
+.calculator {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
 }
-.display{
-    background-color: #e8e8e8;
-    padding: 20px;
-    border-radius: 10px 10px 0 0;
+.display {
+  background-color: #e8e8e8;
+  padding: 20px;
+  border-radius: 10px 10px 0 0;
 }
-.history{
-    background-color: #fff;
-    padding: 10px 10px 0 10px;
-    border-radius: 10px 10px 0 0;
+.history {
+  background-color: #fff;
+  padding: 10px 10px 0 10px;
+  border-radius: 10px 10px 0 0;
 }
-.history-item{
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+.history-item {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
-.history-item-text{
-    font-size: 10px;
-    color: #2e2e2e;
-    font-family: 'Orbitron', sans-serif;
+.history-item-text {
+  font-size: 10px;
+  color: #2e2e2e;
+  font-family: "Orbitron", sans-serif;
 }
-.display input{
-    width: 100%;
-    height: 100%;
-    border: none;
-    outline: none;
-    font-size: 20px;
-    text-align: right;
-    padding: 10px;
-    border-radius: 0 0 10px 10px;
-    color: #000;
-    font-family: 'Orbitron', sans-serif;
+.display input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  text-align: right;
+  padding: 10px;
+  border-radius: 0 0 10px 10px;
+  color: #000;
+  font-family: "Orbitron", sans-serif;
 }
-.buttons{
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(6, 1fr);
-    gap: 1px;
-    width: 100%;
-    height: 100%;
-    background-color: #c8c8c8;
-    padding: 1px;
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 1px;
+  width: 100%;
+  height: 100%;
+  background-color: #c8c8c8;
+  padding: 1px;
+  position: relative;
 }
-.buttons .button{
-    background-color: #e8e8e8;
-    border: none;
-    outline: none;
-    font-size: 14px;
-    text-align: center;
-    padding: 10px;
-    font-family: 'Orbitron', sans-serif;
+.buttons .button {
+  background-color: #e8e8e8;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px;
+  font-family: "Orbitron", sans-serif;
 }
-.buttons .digits{
-    background-color: #fff;
-    font-weight: bold;
-    font-size: 20px;
+.buttons .digits {
+  background-color: #fff;
+  font-weight: bold;
+  font-size: 20px;
 }
-.buttons .equal{
-    background-color: #79cef5;
+.buttons .equal {
+  background-color: #0097a7; /* Deep teal */
+  color: #fff;
+  font-weight: bold;
+  border: 1px solid #00838f;
+  box-shadow: 0 2px 6px rgba(0, 151, 167, 0.15);
+}
+.buttons .clear-all {
+  background-color: #607d8b;
+  color: #fff;
+}
+.buttons .clear-one {
+  background-color: #90a4ae;
+  color: #fff;
+}
+.buttons .change {
+  background-color: #26c6da; /* Teal */
+  color: #fff;
+  border: 1px solid #00838f;
+  box-shadow: 0 2px 6px rgba(38, 198, 218, 0.2);
+  font-weight: bold;
+}
+.buttons .clicked {
+    box-shadow: 0 4px 8px rgba(0, 131, 143, 0.18) inset;
+  transform: translateY(2px) scale(0.98);
+  border: 3px solid #26c6da;
+  transition: 
+    box-shadow 0.12s, 
+    border 0.12s, 
+    transform 0.08s;
 }
 
-.buttons .btn--double{
-    grid-column: span 2;
+.buttons .btn--double {
+  grid-column: span 2;
 }
 
-.buttons .blank{
-    background-color: #fff;
+.buttons .blank {
+  background-color: #fff;
+}
+.buttons .blank--battery {
+  background-color: #fff;
+  font-size: 26px;
+}
+.buttons .blank--battery .battery-percentage{
+  font-size: 16px;
+}
+.buttons .blank--company {
+  background-color: #fff;
+  font-size: 18px;
+}
+.buttons .blank {
+  background-color: #fff;
+}
+
+.hidden {
+  display: none;
+}
+
+.buttons .button:hover,
+.buttons .digits:hover,
+.buttons .equal:hover,
+.buttons .clear-all:hover,
+.buttons .clear-one:hover,
+.buttons .change:hover {
+  filter: brightness(0.92);
+  box-shadow: 0 4px 12px rgba(38, 198, 218, 0.15);
+  cursor: pointer;
+  transition: filter 0.15s, box-shadow 0.15s;
+}
+
+.buttons .blank:hover {
+  filter: none;
+  box-shadow: none;
+  cursor: default;
+}
+
+.submenu {
+  position: absolute;
+  display: none;
+  background: #f7fafd;
+  padding: 8px 0;
+  border: 1px solid #b0bec5;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(38, 198, 218, 0.1);
+  min-width: 170px;
+  max-width: 252px;
+  min-height: 110px;
+  z-index: 10;
+  font-size: 16px;
+}
+
+#trig-menu {
+  top: 160px;
+  left: 0;
+}
+#func-menu {
+  top: 160px;
+  right: 0;
+}
+
+.submenu.show {
+  display: flex;
+  flex-wrap:wrap;
+}
+
+.submenu .func-option {
+  display: block;
+  min-width: 83px;
+  background: none;
+  border: none;
+  color: #0097a7;
+  font-family: "Orbitron", sans-serif;
+  font-size: 15px;
+  padding: 8px 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.submenu .func-option:hover {
+  background: #e0f7fa;
+  color: #006064;
+}
+
+.logo{
+    width: 30px;
+    height: auto;
 }
