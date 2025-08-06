@@ -23,18 +23,28 @@ buttons.forEach((button) => {
 });
 */
 
+function calcFact(num) {
+    let ans = 1;
+    while(num > 1){
+        ans *= num;
+        num--;
+    }
+    return ans;
+}
+
 buttons.forEach((button) => {
   button.addEventListener("click", (e) => {
     currDisplay = display.value;
     if (ansShown) {
-        addToHistory(`Ans = ${currDisplay}`);
-        currDisplay = "";
-        setDisplay(currDisplay);
-        ansShown = false;
+      addToHistory(`Ans = ${currDisplay}`);
+      currDisplay = "";
+      setDisplay(currDisplay);
+      ansShown = false;
     }
     clickVal = e.target.textContent;
     switch (clickVal) {
       case "=":
+        if (currDisplay.slice(-1) === "%") currExp += "1";
         computeString();
         break;
       case "+/-":
@@ -61,9 +71,52 @@ buttons.forEach((button) => {
         currExp += "**";
         setDisplay(currDisplay);
         break;
+      case "log":
+        currDisplay = `log(${currDisplay})`;
+        currExp = `Math.log10(${currExp})`;
+        setDisplay(currDisplay);
+        break;
+      case "ln":
+        currDisplay = `ln(${currDisplay})`;
+        currExp = `Math.ln10(${currExp})`;
+        setDisplay(currDisplay);
+        break;
+      case "10ˣ":
+        currDisplay = `10^(${currDisplay})`;
+        currExp = `10**${currExp}`;
+        setDisplay(currDisplay);
+        break;
+      case "²√x":
+        currDisplay = `²√${currDisplay}`;
+        currExp = `Math.sqrt(${currExp})`;
+        setDisplay(currDisplay);
+        break;
+      case "1/x":
+        currDisplay = `1/(${currDisplay})`;
+        currExp = `1/${currExp}`;
+        setDisplay(currDisplay);
+        break;
+      case "%":
+        currDisplay += "%";
+        currExp += "*0.01*";
+        setDisplay(currDisplay);
+        break;
+      case "n!":
+        let fact;
+        if (isFinite(Number(currDisplay))) {
+          fact = calcFact(Number(currDisplay));
+          currExp += '!';
+          printAns(fact,currExp);
+        } else printAns("", "ERROR");
+        break;
       case "π":
         currDisplay += "π";
         currExp += "3.14159265359";
+        setDisplay(currDisplay);
+        break;
+      case "e":
+        currDisplay += "e";
+        currExp += "2.71828183";
         setDisplay(currDisplay);
         break;
       case "CE":
