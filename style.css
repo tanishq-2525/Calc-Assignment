@@ -11,22 +11,26 @@ body {
   align-items: center;
   height: 100vh;
 }
+
 .container {
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
 }
+
 .calculator {
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
 }
+
 .display {
   background-color: #e8e8e8;
   padding: 20px;
   border-radius: 10px 10px 0 0;
 }
-.history {
+
+.history{
   background-color: #fff;
   padding: 10px 10px 0 10px;
   border-radius: 10px 10px 0 0;
@@ -41,6 +45,23 @@ body {
   color: #2e2e2e;
   font-family: "Orbitron", sans-serif;
 }
+
+.memory{
+  background-color: #fff;
+  padding: 10px 10px 10px 10px;
+  border-radius: 0 0 10px 10px;
+}
+.memory-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.memory-item-text {
+  font-size: 12px;
+  color: #2e2e2e;
+  font-family: "Orbitron", sans-serif;
+}
+
 .display input {
   width: 100%;
   height: 100%;
@@ -49,10 +70,14 @@ body {
   font-size: 20px;
   text-align: right;
   padding: 10px;
-  border-radius: 0 0 10px 10px;
   color: #000;
   font-family: "Orbitron", sans-serif;
+
+  overflow-x: auto;
+  white-space: nowrap;
+  direction: ltr;
 }
+
 .buttons {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -94,7 +119,7 @@ body {
   color: #fff;
 }
 .buttons .change {
-  background-color: #26c6da; /* Teal */
+  background-color: #26c6da; 
   color: #fff;
   border: 1px solid #00838f;
   box-shadow: 0 2px 6px rgba(38, 198, 218, 0.2);
@@ -110,10 +135,10 @@ body {
     transform 0.08s;
 }
 
+
 .buttons .btn--double {
   grid-column: span 2;
 }
-
 .buttons .blank {
   background-color: #fff;
 }
@@ -128,6 +153,7 @@ body {
   background-color: #fff;
   font-size: 18px;
 }
+
 .buttons .blank {
   background-color: #fff;
 }
@@ -170,11 +196,11 @@ body {
 }
 
 #trig-menu {
-  top: 160px;
+  top: 175px;
   left: 0;
 }
 #func-menu {
-  top: 160px;
+  top: 175px;
   right: 0;
 }
 
@@ -203,6 +229,101 @@ body {
 }
 
 .logo{
-    width: 30px;
+    width: 40px;
     height: auto;
+    cursor: pointer;
+}
+
+
+/* ============================= */
+/* DARK MODE: Toggle with .dark */
+/* ============================= */
+
+
+.calculator.dark {
+  background-color: #121212;
+  color: #e0f7fa;
+}
+
+.calculator.dark .display {
+  background-color: #1e1e1e;
+}
+
+.calculator.dark .display input {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+.calculator.dark .history {
+  background-color: #1e1e1e;
+}
+.calculator.dark .history-item-text {
+  color: #b0bec5;
+}
+
+.calculator.dark .buttons {
+  background-color: #2c2c2c;
+}
+
+.calculator.dark .button {
+  background-color: #333;
+  color: #e0f7fa;
+}
+
+.calculator.dark .digits {
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
+.calculator.dark .equal {
+  background-color: #00acc1;
+  color: #fff;
+}
+
+.calculator.dark .clear-all,
+.calculator.dark .clear-one {
+  background-color: #37474f;
+  color: #fff;
+}
+
+.calculator.dark .change {
+  background-color: #26c6da;
+  color: #fff;
+}
+
+.calculator.dark .clicked {
+  border-color: #00acc1;
+  box-shadow: 0 4px 8px rgba(0, 131, 143, 0.3) inset;
+}
+
+.calculator.dark .blank {
+  background-color: #121212;
+}
+.calculator.dark .blank--battery,
+.calculator.dark .blank--company {
+  background-color: #121212;
+  color: #e0f7fa;
+}
+
+.calculator.dark .submenu {
+  background-color: #1f1f1f;
+  border-color: #37474f;
+  color: #e0f7fa;
+}
+
+.calculator.dark .submenu .func-option {
+  color: #4dd0e1;
+}
+
+.calculator.dark .submenu .func-option:hover {
+  background-color: #263238;
+  color: #00acc1;
+}
+
+.calculator,
+.calculator * {
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }

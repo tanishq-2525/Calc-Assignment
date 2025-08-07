@@ -1,24 +1,35 @@
 class Calculator {
-  constructor(displayEl, historyEl) {
+  constructor(displayEl, historyEl, memoryEl) {
     this.displayEl = displayEl;
     this.historyEl = historyEl;
+    this.memoryEl = memoryEl;
     this.expression = "";
     this.lastResult = "";
     this.ansShown = false;
+    this.isRad = false;
+    this.isDec = true;
     this.maxFact = 170;
+    this.mem = 0;
     document.addEventListener("keydown", (e) => this.handleKey(e));
     this.trigBtn = document.querySelector(".trig-btn");
     this.funcBtn = document.querySelector(".func-btn");
     this.trigMenu = document.getElementById("trig-menu");
     this.funcMenu = document.getElementById("func-menu");
     this.batteryDiv = document.querySelector(".blank--battery");
+    this.angleDiv = document.querySelector(".angle");
   }
 
   updateDisplay(text = "") {
     this.displayEl.value = text;
+    setTimeout(() => {
+      this.displayEl.scrollLeft = this.displayEl.scrollWidth;
+    }, 0);
   }
   updateHistory(text = "") {
     this.historyEl.textContent = text;
+  }
+  updateMemory() {
+    this.memoryEl.textContent = `MEM: ${this.mem}`;
   }
 
   closeAllMenus() {
@@ -33,24 +44,30 @@ class Calculator {
   }
 
   append(char) {
+    if(this.displayEl.value.length >= 32) return;
     const last = this.expression.slice(-1);
 
     if (/[+\-*/^.]/.test(last) && /[+\-*/^.]/.test(char)) {
-      if (char !== last) {
+      if (char !== last && char !== ".") {
         this.expression = this.expression.slice(0, -1) + char;
+        if (char === "." && this.expression.includes(".")) return;
         this.updateDisplay(this.expression);
         return;
       }
       return;
     }
     if (char === "." && /\.\d*$/.test(this.expression)) return;
+    if (char === "." && this.expression === "") this.expression+=0;
     if (char === "0" && this.displayEl.value === "0") return;
     if (char === ")" && !this.displayEl.value.includes("(")) return;
-    if (last === ")" && !/[+\-*/^.)%]/.test(char)) {
-      if (this.expression.endsWith("()")) {
-        this.expression = this.expression.slice(0, -2) + "(0)";
+    // if (last === ")" && !/[+\-*/^.)%]/.test(char)) {
+    //   this.expression += "*";
+    // }
+    if (this.expression.endsWith("()")) {
+      this.expression = this.expression.slice(0, -2) + "(0)";
+      if (char === "(") {
+        this.expression += "*";
       }
-      this.expression += "*";
     }
 
     this.expression += char;
@@ -77,9 +94,20 @@ class Calculator {
   applyFunction(func) {
     try {
       let fn;
-      const val = this.expression
-        ? eval(this.expression)
-        : eval(this.lastResult);
+      // Sync expression with display if a new value is typed after a result
+      if (this.ansShown) {
+        if (
+          this.displayEl.value !== this.lastResult &&
+          this.displayEl.value !== this.expression
+        ) {
+          this.expression = this.displayEl.value;
+        }
+        this.ansShown = false;
+      }
+      const val =
+        this.displayEl.value !== ""
+          ? eval(this.displayEl.value)
+          : this.lastResult;
       let result;
       switch (func) {
         case "±":
@@ -111,12 +139,16 @@ class Calculator {
           this.updateDisplay(`${this.expression}`);
           return;
         case "10ˣ":
-          this.updateDisplay(this.expression + "10^");
-          this.expression += "10**";
+          const currEx = Number(this.displayEl.value);
+          const exp = currEx ? currEx : 0;
+          this.expression = `10**${exp}`;
+          this.compute();
           return;
         case "2ˣ":
-          this.updateDisplay(this.expression + "2^");
-          this.expression += "2**";
+          const currExx = Number(this.displayEl.value);
+          const expp = currExx ? currExx : 0;
+          this.expression = `2**${expp}`;
+          this.compute();
           return;
         case "|x|":
           result = Math.abs(val);
@@ -145,6 +177,7 @@ class Calculator {
         case "log":
           result = Math.log10(val);
           fn = `log(${val})`;
+          break;
         case "logᵧx":
           break;
         case "n!":
@@ -161,36 +194,86 @@ class Calculator {
           fn = "e";
           break;
         case "eˣ":
-          this.updateDisplay(this.expression + "e^");
-          this.expression += `2.718281828459045**`;
-          fn = `e^${val}`;
+          const currExxx = Number(this.displayEl.value);
+          const exppp = currExxx ? currExxx : 0;
+          this.expression = `${Math.E}**${exppp}`;
+          this.compute();
+          return;
+        case "DEG":
+          this.angleDiv.textContent = "RAD";
+          this.isRad = true;
+          return;
+        case "RAD":
+          this.angleDiv.textContent = "DEG";
+          this.isRad = false;
           return;
         case "sin":
-          result = Math.sin(this.toRadians(val));
-          fn = `sin(${val}°)`;
+          result = this.isRad ? Math.sin(val) : Math.sin(this.toRadians(val));
+          fn = this.isRad ? `sin(${val}ᶜ)` : `sin(${val}°)`;
           break;
         case "cos":
-            console.log(val);
-            
-          result = Math.cos(this.toRadians(val));
-          fn = `cos(${val}°)`;
+          result = this.isRad ? Math.cos(val) : Math.cos(this.toRadians(val));
+          fn = this.isRad ? `sin(${val}ᶜ)` : `cos(${val}°)`;
           break;
         case "tan":
-          result = Math.tan(this.toRadians(val));
-          fn = `tan(${val}°)`;
+          result = this.isRad ? Math.tan(val) : Math.tan(this.toRadians(val));
+          fn = this.isRad ? `sin(${val}ᶜ)` : `tan(${val}°)`;
           break;
-        case "asin":
-          result = (Math.asin(val) * 180) / Math.PI;
-          fn = `sin⁻¹(${val})`;
+        case "sinh":
+          result = Math.sinh(val);
+          fn = `sinh(${val})`;
           break;
-        case "acos":
-          result = (Math.acos(val) * 180) / Math.PI;
-          fn = `cos⁻¹(${val})`;
+        case "cosh":
+          result = Math.cosh(val);
+          fn = `cosh(${val})`;
           break;
-        case "atan":
-          result = (Math.atan(val) * 180) / Math.PI;
-          fn = `tan⁻¹(${val})`;
+        case "tanh":
+          result = Math.tanh(val);
+          fn = `tanh(${val})`;
           break;
+        case "rand":
+          result = Math.random();
+          fn = "";
+          break;
+        case "dms":
+          const input = this.expression ? eval(this.expression) : 0;
+          const degrees = Math.floor(input);
+          const minutesDecimal = (input - degrees) * 60;
+          const minutes = Math.floor(minutesDecimal);
+          const seconds = ((minutesDecimal - minutes) * 60).toFixed(2);
+          result = `${degrees}° ${minutes}' ${seconds}"`;
+          fn = `dms(${val})`;
+          break;
+        case "F-E":
+          let currDisp = Number(this.displayEl.value);
+          const newDisplay = this.isDec ? currDisp.toExponential() : currDisp;
+          this.isDec = this.isDec ? false : true;
+          this.updateDisplay(newDisplay.toString());
+          return;
+        case "MS":
+          const dispValS = Number(this.displayEl.value);
+          isFinite(dispValS) ? (this.mem = dispValS) : this.mem;
+          this.updateMemory();
+          return;
+        case "M+":
+          const dispValP = Number(this.displayEl.value);
+          isFinite(dispValP) ? (this.mem = this.mem + dispValP) : this.mem;
+          this.updateMemory();
+          return;
+        case "M-":
+          const dispValM = Number(this.displayEl.value);
+          isFinite(dispValM) ? (this.mem = this.mem - dispValM) : this.mem;
+          this.updateMemory();
+          return;
+        case "MR":
+          const m = this.mem;
+          this.updateHistory("MEMORY VALUE");
+          this.updateDisplay(m.toString());
+          return;
+        case "MC":
+          this.mem = 0;
+          this.updateMemory();
+          return;
         default:
           return;
       }
@@ -208,25 +291,34 @@ class Calculator {
     }
   }
 
+  cleanFloat(num, tolerance = 1e-12) {
+    const rounded = Math.round(num * 1e12) / 1e12;
+    return Math.abs(rounded - num) < tolerance ? rounded : num;
+  }
+
   compute() {
     try {
       console.log(this.expression);
-      if (this.expression.includes("pow")) this.expression += ")";
+      if (this.expression.includes("pow") && !this.expression.endsWith(")"))
+        this.expression += ")";
+      if (this.expression.includes("/0") || this.expression.includes("/(0")) {
+        throw new Error("Cannot Divide By Zero");
+      }
       const result = eval(this.expression);
-      console.log(result);
+      const cleanResult = this.cleanFloat(result);
+      this.updateDisplay(cleanResult);
+      this.lastResult = cleanResult;
+      // this.expression = cleanResult.toString();
       this.updateHistory(`${this.expression} = `);
-      this.expression = result;
-      this.lastResult = this.expression;
-      this.updateDisplay(this.expression);
       this.ansShown = true;
     } catch (e) {
-      this.updateHistory("ERROR");
+      this.updateHistory(e);
       this.expression = "";
       this.updateDisplay("");
     }
   }
 
-  handleButton(btn, e) {
+  handleButton(btn) {
     const text = btn.textContent;
     if (btn.classList.contains("digits") || text === ".") {
       if (this.ansShown) {
@@ -262,34 +354,6 @@ class Calculator {
       document.querySelectorAll(".second").forEach((btn) => {
         btn.classList.toggle("hidden");
       });
-    } else if (btn.classList.contains("func-btn")) {
-      e.stopPropagation();
-      this.toggleMenu(this.funcBtn, this.funcMenu);
-      document.addEventListener("click", () => {
-        this.closeAllMenus();
-      });
-      document.querySelectorAll(".func-option").forEach((opt) => {
-        opt.addEventListener("click", (e) => {
-          const fn = e.target.textContent;
-          // call your existing applyFunc or handler
-          this.applyFunction(fn);
-          this.closeAllMenus();
-        });
-      });
-    } else if (btn.classList.contains("trig-btn")) {
-      e.stopPropagation();
-      this.toggleMenu(this.trigBtn, this.trigMenu);
-      document.addEventListener("click", () => {
-        this.closeAllMenus();
-      });
-      document.querySelectorAll(".func-option").forEach((opt) => {
-        opt.addEventListener("click", (e) => {
-          const fn = e.target.textContent;
-          // call your existing applyFunc or handler
-          this.applyFunction(fn);
-          this.closeAllMenus();
-        });
-      });
     }
   }
 
@@ -307,6 +371,18 @@ class Calculator {
       "(": "(",
       ")": ")",
     };
+
+    if (e.key === "Shift") {
+      const changeBtn = document.querySelector(".change");
+      changeBtn.classList.toggle("clicked");
+
+      document.querySelectorAll(".second").forEach((btn) => {
+        btn.classList.toggle("hidden");
+      });
+      e.preventDefault();
+      return;
+    }
+
     if (keyMap[e.key]) {
       if (keyMap[e.key].includes("equal")) this.compute();
       else if (keyMap[e.key].includes("clear-one"))
@@ -325,10 +401,51 @@ class Calculator {
 window.addEventListener("DOMContentLoaded", () => {
   const display = document.getElementById("display");
   const history = document.querySelector(".history-item-text");
-  const calc = new Calculator(display, history);
-  document
-    .querySelectorAll(".button")
-    .forEach((btn) =>
-      btn.addEventListener("click", (e) => calc.handleButton(btn, e))
-    );
+  const memory = document.querySelector(".memory-item-text");
+  const calc = new Calculator(display, history, memory);
+  const img = document.querySelector(".logo");
+
+  document.querySelector(".blank--logo").addEventListener("click", () => {
+    const isDark = document
+      .querySelector(".calculator")
+      .classList.toggle("dark");
+
+    const newSrc = isDark ? "dark-logo.png" : "light-logo.png";
+    img.src = `${newSrc}?v=${Date.now()}`;
+  });
+
+  // Button click handlers for calculator functionality
+  document.querySelectorAll(".button").forEach((btn) => {
+    btn.addEventListener("click", (e) => calc.handleButton(btn, e));
+  });
+
+  // === Submenu toggle logic ===
+  const trigBtn = document.querySelector(".trig-btn");
+  const funcBtn = document.querySelector(".func-btn");
+  const trigMenu = document.getElementById("trig-menu");
+  const funcMenu = document.getElementById("func-menu");
+
+  trigBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    calc.toggleMenu(trigBtn, trigMenu);
+  });
+
+  funcBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    calc.toggleMenu(funcBtn, funcMenu);
+  });
+
+  // Apply function from submenu options
+  document.querySelectorAll(".func-option").forEach((opt) => {
+    opt.addEventListener("click", (e) => {
+      const fn = e.target.textContent;
+      calc.applyFunction(fn);
+      calc.closeAllMenus();
+    });
+  });
+
+  // Close all menus when clicking outside
+  document.addEventListener("click", () => {
+    calc.closeAllMenus();
+  });
 });
